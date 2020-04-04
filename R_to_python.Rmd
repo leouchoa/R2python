@@ -1,0 +1,148 @@
+---
+title: "R to Python"
+author: "Leonardo Uchoa"
+date: "3/31/2020"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: true
+header-includes:
+- \usepackage{amsbsy}
+- \usepackage{amsmath}
+- \usepackage{float}
+- \usepackage{graphicx}
+---
+
+\newpage
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# The table
+
+That's my R to python port. It's intended to make my approach to learning python faster and its mostly composed of data wrangling routine tools. Many of those are already listed in other sources.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+R & Python \\
+\hline
+dim & df.shape (pd) \\
+str & df.dtypes / df.info (pd) \\
+unique & np.unique (np) \\
+summary & df.describe (pd) \\
+\texttt{group\_by} & df.groupby (pd) \\
+count & \verb|df.value_count| (pd) \\
+----- & np.bincount (np) \\
+apply & df.apply (pd) \\
+if.else & df.where[case,true,false] (pd)  \\
+table & pd.crosstab \\
+mutate(df, c=a-b) & df.assign(c=df['a']-df['b']) (pd) \\
+colSums(is.na()) & df.isnull().sum() (pd) \\
+na.omit & df.dropna(axis=X) (pd) \\
+*imputation* & df.fillna(df.mean()) (pd) \\
+colnames() <- & df.colnames (pd) \\
+\end{tabular}
+\end{table}
+
+Abreviations
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lr}
+Module Abreviation & Module \\
+\hline
+pd & Pandas \\
+np & Numpy
+\end{tabular}
+\end{table}
+
+\newpage 
+
+# Usefull examples
+
+These are ilustrations of the commands I use the most when analysing data in R and some additional because they're different from what I'm used to do in R.
+
+```{r}
+library(reticulate)
+use_python("/home/leonardo/anaconda3/bin/python")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+```
+
+## Counting per column
+
+```{python}
+
+df = pd.DataFrame(np.random.randint(0, 2, (10, 4)), columns=list('abcd'))
+df.apply(pd.Series.value_counts)
+```
+
+## Categorical data encoding
+
+```{python}
+
+df = pd.DataFrame([
+['green', 'M', 10.1, 'class2'],
+['red', 'L', 13.5, 'class1'],
+['blue', 'XL', 15.3, 'class2']])
+df.columns = ['color', 'size', 'price', 'classlabel']
+
+df
+```
+
+In both approaches bellow we use a dictionary the create the mapping identifier for the `map` method. Remember that according to [w3schools](https://www.w3schools.com/python/python_dictionaries.asp) a dictionary is 
+
+>*A dictionary is a collection which is unordered, changeable and indexed. In Python dictionaries are written with curly brackets, and they have keys and values.*
+
+### Encoding ordinals - create labels manually
+
+```{python}
+#create the dict mapping from ordinal to integer
+size_mapping = {'XL': 3,'L': 2,'M': 1}
+
+#use map to in the desired column get the mapped values
+df['size'] = df['size'].map(size_mapping)
+```
+
+### Encoding nominals - creating labels automatically
+
+```{python}
+class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
+```
+
+Now what that command is doing is looping through the iterators `idx` and `label` (created by the `enumerate` function) in the unique values of the `classlabel` column and assigning both to `label` and `idx`. Let's see
+
+```{python}
+print(list(
+    enumerate(np.unique(df['classlabel']))
+  ))
+```
+
+So iterating through the list we get to assign "class1"/"class2" to `label` and 0/1 to `idx`\footnote{Note the inversion in `label: idx for idx, label` }. Finally the last step to map
+
+```{python}
+df['classlabel'] = df['classlabel'].map(class_mapping)
+df
+```
+
+Want to get the mapping backwards? Access the `items` method in the `class_mapping` object and loop again
+
+```{python}
+inv_class_mapping = {a:b for b,a in class_mapping.items()}
+df['classlabel'] = df['classlabel'].map(inv_class_mapping)
+df
+```
+
+
+**Ps.: There's also an object in `skitlearn` module `preprocessing` that does this: `LabelEncoder`**
+
+# References
+
+[1]. Pandas: https://pandas.pydata.org/pandas-docs/stable/getting_started/comparison/comparison_with_r.html#quick-reference
+
+[2]. Raschka, S. and Mirjalili, V., 2019. Python Machine Learning. Birmingham: Packt Publishing, Limited.
