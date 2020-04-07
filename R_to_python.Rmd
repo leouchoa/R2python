@@ -1,5 +1,5 @@
 ---
-title: "R to Python"
+title: "R to Python for Data Analysis"
 author: "Leonardo Uchoa"
 date: "3/31/2020"
 output: 
@@ -19,18 +19,23 @@ header-includes:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# The table
+# The tables
 
 That's my R to python port. It's intended to make my approach to learning python faster and its mostly composed of data wrangling routine tools. Many of those are already listed in other sources.
 
+<!-- -------Data wrangling------- -->
+
 \begin{table}[H]
 \centering
+\caption{Data Wrangling}
 \begin{tabular}{lr}
 R & Python \\
 \hline
 dim & df.shape (pd) \\
 str & df.dtypes / df.info (pd) \\
 unique & np.unique (np) \\
+sort & np.sort (np) \\
+rbind & np.hstack (np) \\
 summary & df.describe (pd) \\
 \texttt{group\_by} & df.groupby (pd) \\
 count & \verb|df.value_count| (pd) \\
@@ -46,10 +51,25 @@ colnames() <- & df.colnames (pd) \\
 \end{tabular}
 \end{table}
 
-Abreviations
+<!-- -------Linear Algebra------- -->
 
 \begin{table}[H]
 \centering
+\caption{Linear Algebra}
+\begin{tabular}{lr}
+R & Python \\
+\hline
+eigen & np.linalg.eig (np) \\
+\%*\% & np.dot \\
+----- & np.matmul \\
+\end{tabular}
+\end{table}
+
+<!-- -------Abreviations------- -->
+
+\begin{table}[H]
+\centering
+\caption{Abreviations}
 \begin{tabular}{lr}
 Module Abreviation & Module \\
 \hline
@@ -60,9 +80,13 @@ np & Numpy
 
 \newpage 
 
-# Usefull examples
+\centering{\section*{Usefull examples}}
+\addtocounter{section}{0}
 
-These are ilustrations of the commands I use the most when analysing data in R and some additional because they're different from what I'm used to do in R.
+
+These are convertions of the commands I use the most and some other ( because they're different from what I'm used to do in R) when analysing data in R.
+
+I wrote this document using Rstudio and Rmarkdown. So in order to load python within R the thing to do was to use `reticulate`. But  I've also installed all my python packages using anaconda because it handles compatability between libraries more efficiently. In that case you can load `reticulate` set it's path with `use_python` for it to load packages installed via anaconda (they're **not** the same).
 
 ```{r}
 library(reticulate)
@@ -74,7 +98,9 @@ import numpy as np
 import pandas as pd
 ```
 
-## Counting per column
+# Counting per column
+
+\textbf{\underline{Source}:} StackOverflow.
 
 ```{python}
 
@@ -82,7 +108,31 @@ df = pd.DataFrame(np.random.randint(0, 2, (10, 4)), columns=list('abcd'))
 df.apply(pd.Series.value_counts)
 ```
 
-## Categorical data encoding
+# Multi argument iteration with `zip`
+
+Zip allows us to construct tuples for iterating over multiple arguments.
+
+```{python}
+players = [ "Sachin", "Sehwag", "Gambhir", "Dravid", "Raina" ] 
+scores = [100, 15, 17, 28, 43 ] 
+
+# Lets see how it constructs the tuples
+
+print(tuple(zip(players, scores)))
+
+# Now we just need to iterate over them
+
+for pl, sc in zip(players, scores): 
+    print ("Player :  %s     Score : %d" %(pl, sc)) 
+```
+
+
+# Categorical data encoding
+
+\textbf{\underline{Source}:} Chapter 4 of Python Machine Learning [2].
+
+
+For this section we're working the toy data bellow
 
 ```{python}
 
@@ -99,7 +149,7 @@ In both approaches bellow we use a dictionary the create the mapping identifier 
 
 >*A dictionary is a collection which is unordered, changeable and indexed. In Python dictionaries are written with curly brackets, and they have keys and values.*
 
-### Encoding ordinals - create labels manually
+## Encoding ordinals - create labels manually
 
 ```{python}
 #create the dict mapping from ordinal to integer
@@ -109,7 +159,7 @@ size_mapping = {'XL': 3,'L': 2,'M': 1}
 df['size'] = df['size'].map(size_mapping)
 ```
 
-### Encoding nominals - creating labels automatically
+## Encoding nominals - creating labels automatically
 
 ```{python}
 class_mapping = {label: idx for idx, label in enumerate(np.unique(df['classlabel']))}
@@ -140,6 +190,257 @@ df
 
 
 **Ps.: There's also an object in `skitlearn` module `preprocessing` that does this: `LabelEncoder`**
+
+## Creating Dummies in Design Matrix
+
+\underline{First way: Pandas }
+
+Now to create dummy variables for the design matrix, there's a simple way using pandas
+
+
+```{python}
+df_dm = pd.get_dummies(df[['price', 'color', 'size']], drop_first = True)
+df_dm
+```
+
+The `drop_first = True` is important. Otherwise we woud get another column name "color_blue" with an $(0,0,1)^{T}$ entry which we do not need because when the other 2 columns are 0 we already encode the blue color. 
+
+\underline{Second way: sklearns' OneHotEncoder}
+
+The OneHotEncoder function arguments are (name, transformer,
+columns) tuples
+
+```{python}
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+
+#creat the object
+color_ohe = OneHotEncoder(categories='auto', drop='first')
+c_transf = ColumnTransformer([
+('onehot', color_ohe, [0]), # respectively 'transformer_name',transformer_object,column
+('nothing', 'passthrough', [1, 2]) # respectively 'action_1','action_2', columns for action_1/2
+])
+
+#note that the function input is an np array
+c_transf.fit_transform(df[['color', 'size', 'price']].values).astype(float)
+```
+
+\newpage
+
+# Train-test Split and basic pre-process
+
+\underline{Source:} Chapter 4 of Python Machine Learning [2].
+
+## Train-test Split
+
+```{python}
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+
+wine = datasets.load_wine()
+wine.data.shape
+wine.target.shape
+
+X = wine.data
+y = wine.target
+
+X_train, X_test, y_train, y_test = train_test_split(X,y,
+test_size=0.3, # split
+random_state=0, #  set.seed
+stratify=y) #stratification of data based on target frequencies 
+
+```
+
+## Basic Continuous pre-process
+
+```{python, eval = FALSE}
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+
+stdsc = StandardScaler()
+X_train_std = stdsc.fit_transform(X_train)
+X_test_std = stdsc.transform(X_test)
+
+mms = MinMaxScaler()
+X_train_mms = mms.fit_transform(X_train)
+X_test_mms = mms.transform(X_test)
+
+pca = PCA(n_components=2)
+X_train_pca = pca.fit_transform(X_train_std)
+X_test_pca = pca.transform(X_test_std)
+
+lda = LDA(n_components=2)
+X_train_lda = lda.fit_transform(X_train_std, y_train)
+
+```
+
+# Basic Pipeline
+
+## Cross Validation
+
+```{python, eval = FALSE}
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.linear_model import LogisticRegression
+
+pipe_lr = make_pipeline(StandardScaler(),
+  PCA(n_components=2),
+  LogisticRegression(random_state=1,
+  solver='lbfgs'))
+
+# First way
+
+from sklearn.model_selection import StratifiedKFold
+
+kfold = StratifiedKFold(n_splits=10).split(X_train, y_train)
+scores = []
+
+for k, (train, test) in enumerate(kfold):
+  pipe_lr.fit(X_train[train], y_train[train])
+  score = pipe_lr.score(X_train[test], y_train[test])
+  scores.append(score)
+  print('Fold: %2d, Class dist.: %s, Acc: %.3f' % (k+1,
+    np.bincount(y_train[train]), score))
+    
+# Second and Better way
+
+from sklearn.model_selection import cross_val_score
+
+scores = cross_val_score(estimator=pipe_lr,
+  X=X_train,y=y_train,cv=10,n_jobs=1)
+  
+print('CV accuracy scores: %s' % scores)
+```
+
+## Sample Size Learning Curves
+
+One thing to note here is, according to [2]
+
+>Note that we passed max_iter=10000 as an additional argument when instantiating the LogisticRegression object (which uses 1,000 iterations as a default) to avoid convergence issues for the smaller dataset sizes or extreme regularization parameter
+values.
+
+Which can be valuable for other algorithms too. Note also that stratified k-fold CV is the default routine.
+
+```{python, eval = FALSE}
+import matplotlib.pyplot as plt
+from sklearn.model_selection import learning_curve
+
+
+pipe_lr = make_pipeline(StandardScaler(),
+LogisticRegression(penalty='l2',
+random_state=1,
+solver='lbfgs',
+max_iter=10000))
+
+train_sizes, train_scores, test_scores =\ learning_curve(estimator=pipe_lr,
+X=X_train,
+y=y_train,
+train_sizes=np.linspace(
+0.1, 1.0, 10),
+cv=10,
+n_jobs=1)
+
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+test_mean = np.mean(test_scores, axis=1)
+test_std = np.std(test_scores, axis=1)
+
+
+plt.plot(train_sizes, train_mean, color='blue', marker='o',
+markersize=5, label='Training accuracy')
+
+plt.fill_between(train_sizes,train_mean + train_std, train_mean - train_std,alpha=0.15, color='blue')
+
+plt.plot(train_sizes, test_mean,color='green', linestyle='--', marker='s', markersize=5,label='Validation accuracy')
+
+plt.fill_between(train_sizes,
+test_mean + test_std,
+test_mean - test_std,
+alpha=0.15, color='green')
+
+plt.grid()
+plt.xlabel('Number of training examples')
+plt.ylabel('Accuracy')
+plt.legend(loc='lower right')
+plt.ylim([0.8, 1.03])
+plt.show()
+```
+
+
+## Validation Curves
+
+Here stratified k-fold CV is the default routine.
+
+```{python, eval = FALSE}
+
+from sklearn.model_selection import validation_curve
+
+param_range = [0.001, 0.01, 0.1, 1.0, 10.0, 100.0]
+
+train_scores, test_scores = validation_curve(
+estimator=pipe_lr,
+X=X_train,
+y=y_train,
+param_name='logisticregression__C',
+param_range=param_range,
+cv=10)
+
+train_mean = np.mean(train_scores, axis=1)
+train_std = np.std(train_scores, axis=1)
+test_mean = np.mean(test_scores, axis=1)
+test_std = np.std(test_scores, axis=1)
+
+plt.plot(param_range, train_mean,
+color='blue', marker='o',
+markersize=5, label='Training accuracy')
+plt.fill_between(param_range, train_mean + train_std,
+train_mean - train_std, alpha=0.15,
+color='blue')
+plt.plot(param_range, test_mean,
+color='green', linestyle='--',
+marker='s', markersize=5,
+label='Validation accuracy')
+
+plt.fill_between(param_range,
+test_mean + test_std,
+test_mean - test_std,
+alpha=0.15, color='green')
+
+plt.grid()
+plt.xscale('log')
+plt.legend(loc='lower right')
+plt.xlabel('Parameter C')
+plt.ylabel('Accuracy')
+plt.ylim([0.8, 1.0])
+plt.show()
+```
+
+## Tuning hyperparameters via grid search
+
+```{python, eval = FALSE}
+from sklearn.model_selection import GridSearchCV
+from sklearn.svm import SVC
+
+pipe_svc = make_pipeline(StandardScaler(),SVC(random_state=1))
+
+param_range = [0.0001, 0.001, 0.01, 0.1,1.0, 10.0, 100.0, 1000.0]
+param_grid = [{'svc__C': param_range,'svc__kernel': ['linear']},
+{'svc__C': param_range,'svc__gamma': param_range,
+'svc__kernel': ['rbf']}]
+
+gs = GridSearchCV(estimator=pipe_svc,param_grid=param_grid
+scoring='accuracy',cv=10,refit=True,n_jobs=-1)
+
+gs = gs.fit(X_train, y_train)
+
+clf = gs.best_estimator_
+clf.fit(X_train, y_train)
+print('Test accuracy: %.3f' % clf.score(X_test, y_test))
+```
 
 # References
 
