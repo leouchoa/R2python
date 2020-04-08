@@ -80,7 +80,9 @@ np & Numpy
 
 \newpage 
 
-\centering{\section*{Usefull examples}}
+\begin{center}
+\section*{Usefull examples}
+\end{center}
 \addtocounter{section}{0}
 
 
@@ -98,7 +100,11 @@ import numpy as np
 import pandas as pd
 ```
 
-# Counting per column
+
+\begin{center}
+\section{Counting per column}
+\end{center}
+
 
 \textbf{\underline{Source}:} StackOverflow.
 
@@ -108,7 +114,9 @@ df = pd.DataFrame(np.random.randint(0, 2, (10, 4)), columns=list('abcd'))
 df.apply(pd.Series.value_counts)
 ```
 
-# Multi argument iteration with `zip`
+\begin{center}
+\section{Multi argument iteration with zip}
+\end{center}
 
 Zip allows us to construct tuples for iterating over multiple arguments.
 
@@ -127,7 +135,9 @@ for pl, sc in zip(players, scores):
 ```
 
 
-# Categorical data encoding
+\begin{center}
+\section{Categorical data encoding}
+\end{center}
 
 \textbf{\underline{Source}:} Chapter 4 of Python Machine Learning [2].
 
@@ -228,7 +238,10 @@ c_transf.fit_transform(df[['color', 'size', 'price']].values).astype(float)
 
 \newpage
 
-# Train-test Split and basic pre-process
+
+\begin{center}
+\section{Train-test Split and basic pre-process}
+\end{center}
 
 \underline{Source:} Chapter 4 of Python Machine Learning [2].
 
@@ -277,7 +290,12 @@ X_train_lda = lda.fit_transform(X_train_std, y_train)
 
 ```
 
-# Basic Pipeline
+
+\newpage 
+
+\begin{center}
+\section{Basic Pipeline}
+\end{center}
 
 ## Cross Validation
 
@@ -421,6 +439,16 @@ plt.show()
 
 ## Tuning hyperparameters via grid search
 
+Here we're grid searching hyperparameters for an SVM with two different kernel functions and their respective parameters\footnote{Using RandomizedSearchCV in scikit-learn, we can perform Randomized Grid Search. See [3]}. Thats is: for the linear basis function we search for the range and for the rbf we search the range and gamma.
+
+Here we have two dictionaries: 
+
+- `{'svc__C': param_range,'svc__kernel': ['linear']}` and
+
+- `{'svc__C': param_range,'svc__gamma': param_range,'svc__kernel': ['rbf']}`
+
+who compose our grids.
+
 ```{python, eval = FALSE}
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVC
@@ -428,6 +456,7 @@ from sklearn.svm import SVC
 pipe_svc = make_pipeline(StandardScaler(),SVC(random_state=1))
 
 param_range = [0.0001, 0.001, 0.01, 0.1,1.0, 10.0, 100.0, 1000.0]
+
 param_grid = [{'svc__C': param_range,'svc__kernel': ['linear']},
 {'svc__C': param_range,'svc__gamma': param_range,
 'svc__kernel': ['rbf']}]
@@ -440,10 +469,43 @@ gs = gs.fit(X_train, y_train)
 clf = gs.best_estimator_
 clf.fit(X_train, y_train)
 print('Test accuracy: %.3f' % clf.score(X_test, y_test))
+
 ```
 
-# References
+As note in [2] a great thing to keep in mind is
+
+> Please note that fitting a model with the best settings ( gs.best_estimator_ ) on the training set manually via clf.fit(X_train, y_train) after completing the grid search is not necessary. The GridSearchCV class has a refit parameter, which
+will refit the gs.best_estimator_ to the whole training set automatically if we set refit=True (default).
+
+## Nested Cross Validation
+
+See [4]. Following [2], chapter 6, let's compare a decision tree and an svc.
+
+```{python, eval= FALSE}
+
+from sklearn.tree import DecisionTreeClassifier
+
+gs_svc = GridSearchCV(estimator=pipe_svc,param_grid=param_grid,scoring='accuracy',cv=2)
+scores_svc = cross_val_score(gs_svc, X_train, y_train,scoring='accuracy', cv=5)
+
+gs_tree = GridSearchCV(estimator=DecisionTreeClassifier(random_state=0),
+param_grid=[{'max_depth': [1, 2, 3,4, 5, 6,7, None]}],scoring='accuracy',cv=2)
+
+scores_tree = cross_val_score(gs_tree, X_train, y_train,scoring='accuracy',cv=5)
+
+```
+
+\newpage
+
+
+\begin{center}
+\section{References}
+\end{center}
 
 [1]. Pandas: https://pandas.pydata.org/pandas-docs/stable/getting_started/comparison/comparison_with_r.html#quick-reference
 
 [2]. Raschka, S. and Mirjalili, V., 2019. Python Machine Learning. Birmingham: Packt Publishing, Limited.
+
+[3]. Random search for hyper-parameter optimization. Bergstra J, Bengio Y. Journal of Machine Learning Research. pp. 281-305, 2012
+
+[4]. Bias in Error Estimation When Using Cross-Validation for Model Selection, BMC Bioinformatics, S. Varma and R. Simon, 7(1): 91, 2006
