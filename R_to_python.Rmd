@@ -32,6 +32,7 @@ That's my R to python port. It's intended to make my approach to learning python
 R & Python \\
 \hline
 dim & df.shape (pd) \\
+stop & raise ValueError \\
 str & df.dtypes / df.info (pd) \\
 unique & np.unique (np) \\
 sort & np.sort (np) \\
@@ -43,6 +44,7 @@ count & \verb|df.value_count| (pd) \\
 apply & df.apply (pd) \\
 if.else & df.where[case,true,false] (pd)  \\
 table & pd.crosstab \\
+corr & np.corrcoef (np) \\
 mutate(df, c=a-b) & df.assign(c=df['a']-df['b']) (pd) \\
 colSums(is.na()) & df.isnull().sum() (pd) \\
 na.omit & df.dropna(axis=X) (pd) \\
@@ -50,6 +52,22 @@ na.omit & df.dropna(axis=X) (pd) \\
 colnames() <- & df.colnames (pd) \\
 \end{tabular}
 \end{table}
+
+<!-- -------Plotting------- -->
+
+
+\begin{table}[H]
+\centering
+\caption{Plotting facilities}
+\begin{tabular}{lr}
+base R & matplotlib \\
+\hline \\
+pairs & scatterplotmatrix (mlext subm) \\
+heatmap & heatmap (mlext subm)\\
+image & np.imshow(img,cmap = "Color") (plt)\\
+\end{tabular}
+\end{table}
+
 
 <!-- -------Linear Algebra------- -->
 
@@ -74,7 +92,9 @@ eigen & np.linalg.eig (np) \\
 Module Abreviation & Module \\
 \hline
 pd & Pandas \\
-np & Numpy
+np & Numpy \\
+plt & matplotlib \\
+---- & mlextend \\
 \end{tabular}
 \end{table}
 
@@ -88,7 +108,7 @@ np & Numpy
 
 These are convertions of the commands I use the most and some other ( because they're different from what I'm used to do in R) when analysing data in R.
 
-I wrote this document using Rstudio and Rmarkdown. So in order to load python within R the thing to do was to use `reticulate`. But  I've also installed all my python packages using anaconda because it handles compatability between libraries more efficiently. In that case you can load `reticulate` set it's path with `use_python` for it to load packages installed via anaconda (they're **not** the same).
+I wrote this document using Rstudio and Rmarkdown. So in order to load python within R the thing to do was to use `reticulate`. But  I've also installed all my python packages using anaconda because it handles compatability between libraries more efficiently. In that case you can load `reticulate` and set it's path with `use_python` for it to load the packages installed via anaconda \footnote{The paths are \textbf{not} the same}.
 
 ```{r}
 library(reticulate)
@@ -98,6 +118,7 @@ use_python("/home/leonardo/anaconda3/bin/python")
 ```{python}
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 ```
 
 
@@ -497,10 +518,123 @@ scores_tree = cross_val_score(gs_tree, X_train, y_train,scoring='accuracy',cv=5)
 
 \newpage
 
-
 \begin{center}
-\section{References}
+\section{Performance Evaluation Metrics}
 \end{center}
+
+
+```{python, eval= FALSE}
+from sklearn.metrics import confusion_matrix
+
+y_pred = pipe_svc.predict(X_test)
+confmat = confusion_matrix(y_true=y_test, y_pred=y_pred)
+
+```
+
+```{python, eval= FALSE}
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score, f1_score
+from sklearn.metrics import roc_curve, auc, roc_auc_score
+
+precision_score(y_true=y_test, y_pred=y_pred)
+f1_score(y_true=y_test, y_pred=y_pred)
+
+```
+
+## Making our own scorer
+
+```{python, eval= FALSE}
+pre_scorer = make_scorer(score_func=precision_score,pos_label=1, greater_is_better=True,average='micro')
+```
+
+## Resampling for Class Imbalances
+
+```{python, eval= FALSE}
+from sklearn.utils import resample
+
+X_upsampled, y_upsampled = resample(X_imb[y_imb == 1],y_imb[y_imb == 1],replace=True,n_samples=X_imb[y_imb == 0].shape[0],random_state=123)
+
+X_bal = np.vstack((X[y == 0], X_upsampled))
+y_bal = np.hstack((y[y == 0], y_upsampled))
+```
+
+
+Alternatives:
+
+- SMOTE;
+
+- `imbalanced-learn` - see [5]
+
+
+\newpage
+\begin{center}
+\section{Misc}
+\end{center}
+
+
+### Unzipping tarballs within Python and Working with the `with` expression
+
+The `with` expressin is a really nice feature of python as it is the responsible for setting things up for task you want to do and then clean things down. A classic and very used example of it is to open a file and do some things. 
+
+In order to open a file we must first to establish a connection with it. After this, we do what we gotta do and then must close the file. It looks like this
+
+```{python, eval=FALSE}
+file = open("file_name")
+
+do something #eg file.read()
+
+file.close()
+```
+
+Now using `with` it becomes 
+
+```{python, eval=FALSE}
+with open("file_name") as file:
+  do something
+```
+
+The `with` expression sets the connection, waits for you to do your task and even close it for you. Another example is extracting tarballs, is illustrated as follows.
+
+```{python, eval = FALSE}
+
+import tarfile
+with tarfile.open('file_name.tar.gz', 'r:gz') as tar:
+  tar.extractall()
+
+```
+
+But how does it works? It's very well explained in [7] and I recommend it.
+
+## Sourcing Python Files
+
+\textbf{\underline{Source}:} StackOverflow  See [6]
+
+```{python, eval = FALSE}
+exec(open("NeuralNetMLP.py").read())
+os.system("file.py") # need to import os
+```
+
+## Serializing Objects
+
+The mainstream way is to use `pickle`. It can be done with `joblib`, but it is best suited for scheduling tasks, actually.
+
+```{python, eval = FALSE}
+import pickle
+
+filename = 'object.sav'
+pickle.dump(nn, open(filename, 'wb'))
+
+loaded_object = pickle.load(open(filename, 'rb'))
+loaded_object
+
+import joblib
+
+filename = 'object.sav'
+joblib.dump(model, filename)
+loaded_object = joblib.load(filename)
+```
+
+\section{References}
 
 [1]. Pandas: https://pandas.pydata.org/pandas-docs/stable/getting_started/comparison/comparison_with_r.html#quick-reference
 
@@ -509,3 +643,9 @@ scores_tree = cross_val_score(gs_tree, X_train, y_train,scoring='accuracy',cv=5)
 [3]. Random search for hyper-parameter optimization. Bergstra J, Bengio Y. Journal of Machine Learning Research. pp. 281-305, 2012
 
 [4]. Bias in Error Estimation When Using Cross-Validation for Model Selection, BMC Bioinformatics, S. Varma and R. Simon, 7(1): 91, 2006
+
+[5]. https://github.com/scikit-learn-contrib/imbalanced-learn .
+
+[6]. https://stackoverflow.com/a/6357529
+
+[7]. https://effbot.org/zone/python-with-statement.htm
