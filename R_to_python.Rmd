@@ -638,6 +638,7 @@ loaded_object = joblib.load(filename)
 
 - [Assertions vs Exceptions](https://stefan.sofa-rockers.org/2018/04/16/assertions-and-exceptions/)
 - [Solved!! UnboundLocalError: local variable referenced before assignment](https://careerkarma.com/blog/python-local-variable-referenced-before-assignment/)
+- [Python Packages](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html)
 
 \section{References}
 
