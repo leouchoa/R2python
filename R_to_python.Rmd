@@ -640,6 +640,7 @@ loaded_object = joblib.load(filename)
 - [Solved!! UnboundLocalError: local variable referenced before assignment](https://careerkarma.com/blog/python-local-variable-referenced-before-assignment/)
 - [Python Packages](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html) and a [good video](https://www.youtube.com/watch?v=wCGsLqHOT2I)wheel
 - [Using wheel to create packages](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
+- [Automated Jyputers as altenative do automated Rmds](https://medium.com/capital-fund-management/automated-reports-with-jupyter-notebooks-using-jupytext-and-papermill-619e60c37330)
 
 \section{References}
 
