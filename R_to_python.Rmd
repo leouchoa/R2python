@@ -40,7 +40,7 @@ rbind & np.hstack (np) \\
 summary & df.describe (pd) \\
 \texttt{group\_by} & df.groupby (pd) \\
 count & \verb|df.value_count| (pd) \\
------ & np.bincount (np) \\
+table & np.bincount (np array) \\
 apply & df.apply (pd) \\
 if.else & df.where[case,true,false] (pd)  \\
 table & pd.crosstab \\
