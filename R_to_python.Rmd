@@ -634,6 +634,20 @@ joblib.dump(model, filename)
 loaded_object = joblib.load(filename)
 ```
 
+## Plotting with Seaborn in the Console
+
+In order to display seaborn plots without some IDE that automatically handles plotting, you need to also call the matplotlib's pyplot submodule function `show`, as shown below.
+
+```{python}
+import seaborn as sb
+import matplotlib.pyplot as plt
+
+iris = sb.load_dataset('iris')
+
+sb.relplot(data='iris',x='sepal_length',y='petal_length')
+plt.show()
+```
+
 ## Python Programming nuggets
 
 - [Assertions vs Exceptions](https://stefan.sofa-rockers.org/2018/04/16/assertions-and-exceptions/)
