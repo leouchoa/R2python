@@ -648,6 +648,15 @@ sb.relplot(data='iris',x='sepal_length',y='petal_length')
 plt.show()
 ```
 
+## Modules, projects, packages 
+
+- **Module**: is just a file ending with a `.py` extension
+- **Package**: usually is a directory containing at aleast a module *and* a file called __init__.py. 
+    - When the __init__.py file is imported, the code within it will be run. So it is used to import other files (modules)
+    - Specifying the __init__.py file: simply put you're importing modules, so the standard *import foo from asd as bla* works well. But you can also upgrade your init file to support more complex tasks, like unit testing. For example see the scikit-learn [linear model submodule](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/linear_model/__init__.py).
+- **Projects**: is a collection of packages
+
+
 ## Python Programming nuggets
 
 - [Assertions vs Exceptions](https://stefan.sofa-rockers.org/2018/04/16/assertions-and-exceptions/)
