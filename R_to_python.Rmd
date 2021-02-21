@@ -656,6 +656,7 @@ plt.show()
     - Specifying the __init__.py file: simply put you're importing modules, so the standard *import foo from asd as bla* works well. But you can also upgrade your init file to support more complex tasks, like unit testing. For example see the scikit-learn [linear model submodule](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/linear_model/__init__.py).
 - **Projects**: is a collection of packages
 
+**Important**: If you're creating a python library, you **must** specify the __init__ files because they are the reference to what's being imported. Otherwise when importing the lib, python won't find the modules you want.
 
 ## Python Programming nuggets
 
