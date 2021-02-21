@@ -656,13 +656,13 @@ plt.show()
     - Specifying the __init__.py file: simply put you're importing modules, so the standard *import foo from asd as bla* works well. But you can also upgrade your init file to support more complex tasks, like unit testing. For example see the scikit-learn [linear model submodule](https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/linear_model/__init__.py).
 - **Projects**: is a collection of packages
 
-**Important**: If you're creating a python library, you **must** specify the __init__ files because they are the reference to what's being imported. Otherwise when importing the lib, python won't find the modules you want.
+**Important**: If you're creating a python library, you **must** specify the __init__ files because they are the reference to what's being imported. Otherwise when importing the lib, python won't find the modules you want. See [this](https://stackoverflow.com/a/14132912)
 
 ## Python Programming nuggets
 
 - [Assertions vs Exceptions](https://stefan.sofa-rockers.org/2018/04/16/assertions-and-exceptions/)
 - [Solved!! UnboundLocalError: local variable referenced before assignment](https://careerkarma.com/blog/python-local-variable-referenced-before-assignment/)
-- Python Packages [good overview](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html), a [video](https://www.youtube.com/watch?v=wCGsLqHOT2I) and a [simplified version](https://oneraynyday.github.io/dev/2017/08/02/Python-File-Structure/)
+- Python Packages [good overview](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html), a [video](https://www.youtube.com/watch?v=wCGsLqHOT2I), a [simplified version](https://oneraynyday.github.io/dev/2017/08/02/Python-File-Structure/) and more [nice explanations](https://docs.python-guide.org/writing/structure/)
 - [Using wheel to create packages](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
 - [Automated Jyputers as altenative do automated Rmds](https://medium.com/capital-fund-management/automated-reports-with-jupyter-notebooks-using-jupytext-and-papermill-619e60c37330)
 
