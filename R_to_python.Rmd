@@ -123,6 +123,38 @@ import matplotlib.pyplot as plt
 
 
 \begin{center}
+\section{Numpy Broadcasting}
+\end{center}
+
+From [numpy's manual](https://numpy.org/doc/stable/user/basics.broadcasting.html) broadcasting in python is a way to "describe how numpy treats arrays with different shapes during arithmetic operations. Subject to certain constraints, the smaller array is 'broadcast' across the larger array so that they have compatible shapes". 
+
+ - The good thing is that it allows for internal C looping instead of running in python, which is more efficient.
+ - The bad thing is that sometimes it leads to some inefficiencies
+
+But it's different from what happens in R in the sense that's less harmfull. In we complete the smaller vector and can (and wp1 will) eventually cause some disasters. But in after some update at least we receive a warning message, so stay alert!
+
+```{r}
+a = 1:10
+b = 1:5
+a + b 
+```
+
+In python receive an error message instead of a warning.
+
+```{python}
+a = np.array([1,2,3,4,5])
+b = np.array([1,2,3])
+```
+
+But broadcasting here allows us to do some cool things, like computing row/column-wise percentages. For example:
+
+```{python}
+A = pd.DataFrame([[np.random.rand() for _ in range(5)] for _ in range(5)])
+rowwise_total = A.sum(axis = 0)
+print(100 * A/rowwise_total)
+```
+
+\begin{center}
 \section{Counting per column}
 \end{center}
 
