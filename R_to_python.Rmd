@@ -139,20 +139,42 @@ b = 1:5
 a + b 
 ```
 
-In python receive an error message instead of a warning.
+In python receive an error message instead of a warning, which is better. 
 
 ```{python}
 a = np.array([1,2,3,4,5])
-b = np.array([1,2,3])
+b = np.array([1,2])
+
+print(a + b)
+
+print(a * b)
+
+# but adding a scalar to an array is cool and allowed
+
+print(a + 100)
 ```
 
-But broadcasting here allows us to do some cool things, like computing row/column-wise percentages. For example:
+But the uncool thing still remais and some random NaNs may appear.
+
+```{r}
+B = pd.DataFrame([[1,2,3],[1,2,3]])
+C = pd.DataFrame([100,200])
+
+print(B + C)
+print(C + B)
+print(B + C.T)
+```
+
+
+Even so broadcasting in python allows us to do some cool things, like computing row/column-wise percentages. For example:
 
 ```{python}
 A = pd.DataFrame([[np.random.rand() for _ in range(5)] for _ in range(5)])
 rowwise_total = A.sum(axis = 0)
 print(100 * A/rowwise_total)
 ```
+
+As some general rules if A is (m,n) and B is (1,n) or (m,1) then `A +,-,*,/ B` will make the result be of dimension (m,n)
 
 \begin{center}
 \section{Counting per column}
