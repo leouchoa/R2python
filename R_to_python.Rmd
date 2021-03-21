@@ -719,6 +719,7 @@ plt.show()
 - Python Packages [good overview](https://python-packaging-tutorial.readthedocs.io/en/latest/setup_py.html), a [video](https://www.youtube.com/watch?v=wCGsLqHOT2I), a [simplified version](https://oneraynyday.github.io/dev/2017/08/02/Python-File-Structure/) and more [nice explanations](https://docs.python-guide.org/writing/structure/)
 - [Using wheel to create packages](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
 - [Automated Jyputers as altenative do automated Rmds](https://medium.com/capital-fund-management/automated-reports-with-jupyter-notebooks-using-jupytext-and-papermill-619e60c37330)
+- [Kickstarting projects with cookiecutter](https://sourcery.ai/blog/python-best-practices/)
 
 \section{References}
 
