@@ -720,6 +720,7 @@ plt.show()
 - [Using wheel to create packages](https://hynek.me/articles/sharing-your-labor-of-love-pypi-quick-and-dirty/)
 - [Automated Jyputers as altenative do automated Rmds](https://medium.com/capital-fund-management/automated-reports-with-jupyter-notebooks-using-jupytext-and-papermill-619e60c37330)
 - [Kickstarting projects with cookiecutter](https://sourcery.ai/blog/python-best-practices/)
+- [parsing dates with pandas](https://towardsdatascience.com/4-tricks-you-should-know-to-parse-date-columns-with-pandas-read-csv-27355bb2ad0e)
 
 \section{References}
 
@@ -736,3 +737,4 @@ plt.show()
 [6]. https://stackoverflow.com/a/6357529
 
 [7]. https://effbot.org/zone/python-with-statement.htm
+
