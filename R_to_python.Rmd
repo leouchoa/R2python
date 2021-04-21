@@ -50,6 +50,7 @@ colSums(is.na()) & df.isnull().sum() (pd) \\
 na.omit & df.dropna(axis=X) (pd) \\
 *imputation* & df.fillna(df.mean()) (pd) \\
 colnames() <- & df.colnames (pd) \\
+\%in\% & df.isin(list_of_elements) (pd)
 \end{tabular}
 \end{table}
 
