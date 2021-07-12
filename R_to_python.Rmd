@@ -723,6 +723,7 @@ plt.show()
 - [Kickstarting projects with cookiecutter](https://sourcery.ai/blog/python-best-practices/)
 - [parsing dates with pandas](https://towardsdatascience.com/4-tricks-you-should-know-to-parse-date-columns-with-pandas-read-csv-27355bb2ad0e)
 - [god bless `.format`!](https://pyformat.info/)
+- [arrow function???? `def myfn() -> ??` not really, just documentation](https://medium.com/@thomas_k_r/whats-this-weird-arrow-notation-in-python-53d9e293113)
 
 \section{References}
 
